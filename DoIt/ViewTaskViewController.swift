@@ -13,26 +13,28 @@ class ViewTaskViewController: UIViewController {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     
-    var previousVC = TasksViewController()
-    var task = Task()
+    var task: Task? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         var importance = ""
-        if(task.important) {
+        if(task!.important) {
             importance = "❗️"
         } else {
             importance = "🔆"
         }
-        nameLabel.text = "\(importance)\(task.name)"
-        descriptionLabel.text = task.description
+        nameLabel.text = "\(importance)\(task!.name!)"
+        descriptionLabel.text = task!.explanation!
     }
     
     @IBAction func completeTask(_ sender: Any) {
-        previousVC.tasks.remove(at: previousVC.selectedIndex)
-        previousVC.tableview.reloadData()
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        let context = delegate.persistentContainer.viewContext
+        context.delete(task!)
+        delegate.saveContext()
+        
         navigationController!.popViewController(animated: true)
     }
 

@@ -14,8 +14,6 @@ class CreateTaskViewController: UIViewController {
     @IBOutlet weak var descriptionField: UITextView!
     @IBOutlet weak var importantSwitch: UISwitch!
     
-    var previousVC = TasksViewController()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -24,18 +22,18 @@ class CreateTaskViewController: UIViewController {
 
     @IBAction func addTask(_ sender: Any) {
         // Create a Task from the outlet information
-        let task = Task()
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        let context = delegate.persistentContainer.viewContext
+        
+        let task = Task(context: context)
         task.name = nameField.text!
         task.important = importantSwitch.isOn
         if(descriptionField.text! == "") {
-            task.description = "None"
+            task.explanation = "No Description"
         } else {
-            task.description = descriptionField.text!
+            task.explanation = descriptionField.text!
         }
-        
-        // Add task to table view (array in main view controller)
-        previousVC.tasks.append(task)
-        previousVC.tableview.reloadData()
+        delegate.saveContext()
         navigationController!.popViewController(animated: true)
     }
     
